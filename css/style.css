@@ -4,3 +4,21 @@ body {
 	margin: 0px;
 	padding: 0px;
 }
+.mui-bar-nav~.mui-content{
+	padding-top:14px; 
+}
+
+.selectst {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: flex;
+	margin-bottom: 10px;
+}
+.selectst .mui-btn-block {
+	padding: 8px 10px;
+	margin-bottom: 0;
+	font-size: 12px;
+	border: none;
+	border-radius: 5px;
+	color: #272727;
+}

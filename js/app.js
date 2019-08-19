@@ -4,34 +4,60 @@
  * 请注意将相关方法调整成 “基于服务端Service” 的实现。
  **/
 (function($, owner) {
+	var serverurl = "http://192.168.11.72:8080";
+	//var serverurl ="http://192.168.2.164:8080";
 	/**
 	 * 用户登录
 	 **/
 	owner.login = function(loginInfo, callback) {
 		callback = callback || $.noop;
 		loginInfo = loginInfo || {};
-		loginInfo.account = loginInfo.account || '';
+		loginInfo.username = loginInfo.username || '';
 		loginInfo.password = loginInfo.password || '';
-		if (loginInfo.account.length < 5) {
+		/* if (loginInfo.username.length < 5) {
 			return callback('账号最短为 5 个字符');
 		}
 		if (loginInfo.password.length < 6) {
 			return callback('密码最短为 6 个字符');
-		}
-		var users = JSON.parse(localStorage.getItem('$users') || '[]');
-		var authed = users.some(function(user) {
-			return loginInfo.account == user.account && loginInfo.password == user.password;
+		} */
+		console.log(serverurl+'/rest/user/login');
+		mui.ajax(serverurl+'/rest/user/login',{
+			data:loginInfo,
+			dataType:'json',//服务器返回json格式数据
+			type:'post',//HTTP请求类型
+			timeout:10000,//超时时间设置为10秒；
+			//headers:{'Content-Type':'application/json'},	              
+			success:function(re){
+				//服务器返回响应，根据响应结果，分析是否登录成功；
+				console.log( JSON.stringify((re)));
+				//var users = JSON.parse(data);
+				if("505"==re.status){
+					return callback(re.message);
+				}
+				localStorage.setItem('$users', JSON.stringify(re));
+				return owner.createState(re.data.truename, callback);
+			},
+			error:function(xhr,type,errorThrown){
+				//异常处理；
+				return callback("上传数据失败！");
+			}
 		});
+		
+		/* var users = JSON.parse(localStorage.getItem('$users') || '[]');
+		var authed = users.some(function(user) {
+			return loginInfo.username == user.username && loginInfo.password == user.password;
+		});
+		
 		if (authed) {
-			return owner.createState(loginInfo.account, callback);
+			return owner.createState(loginInfo.username, callback);
 		} else {
-			return callback('用户名或密码错误');
-		}
+			
+		} */
 	};
 
 	owner.createState = function(name, callback) {
 		var state = owner.getState();
-		state.account = name;
+		state.username = name;
 		state.token = "token123456789";
 		owner.setState(state);
 		return callback();
@@ -43,9 +69,9 @@
 	owner.reg = function(regInfo, callback) {
 		callback = callback || $.noop;
 		regInfo = regInfo || {};
-		regInfo.account = regInfo.account || '';
+		regInfo.username = regInfo.username || '';
 		regInfo.password = regInfo.password || '';
-		if (regInfo.account.length < 5) {
+		if (regInfo.username.length < 5) {
 			return callback('用户名最短需要 5 个字符');
 		}
 		if (regInfo.password.length < 6) {
@@ -73,6 +99,7 @@
 	 **/
 	owner.setState = function(state) {
 		state = state || {};
+		
 		localStorage.setItem('$state', JSON.stringify(state));
 		//var settings = owner.getSettings();
 		//settings.gestures = '';
@@ -145,4 +172,59 @@
 			}
 		}
 	}
-}(mui, window.app = {}));
+	
+	//保存灭菌信息
+	owner.saveSterilize = function (sterilize,callback) {
+	   	callback = callback || $.noop;
+		var users = JSON.parse(localStorage.getItem('$users') || '[]');
+	   	sterilize = sterilize || {};
+	  	sterilize.barcode = sterilize.barcode || '';
+		sterilize.mjdate =  sterilize.mjdate || '';
+		sterilize.guihao = sterilize.guihao || '';
+		sterilize.coperator = sterilize.coperator || '';
+		sterilize.banbie = sterilize.banbie || '';
+		sterilize.creator = users.data.truename || '';
+		if(sterilize.creator.length <1 ){
+			return callback(1,' 请登录后进行扫码操作！');
+		}
+		if(sterilize.mjdate.length < 2 || "请选择灭菌日期"==sterilize.mjdate){
+			return callback(1,' 请选择灭菌日期！');
+		}
+		if(sterilize.coperator.length < 1 || "请选择操作人"==sterilize.coperator){
+			return callback(1,' 请选择操作人！');
+		}
+		if(sterilize.banbie.length < 1 || "请选择班别"==sterilize.banbie){
+			return callback(1,' 请选班别！');
+		}
+		if(sterilize.guihao.length < 1 || "请选择灭菌柜号"==sterilize.guihao){
+			return callback(1,' 请选择柜号！');
+		}
+		if(sterilize.barcode.length != 26){
+			return callback(1,' 条码长度必须为26位！');
+		}
+		
+
+	   	console.log(serverurl+'/rest/ster/add');
+	   	mui.ajax(serverurl+'/rest/ster/add',{
+	   		data:sterilize,
+	   		dataType:'json',//服务器返回json格式数据
+	   		type:'post',//HTTP请求类型
+	   		timeout:10000,//超时时间设置为10秒；
+	   		headers:{'Content-Type':'application/json'},
+	   		success:function(re){
+	   			//服务器返回响应，根据响应结果，分析是否登录成功；
+	   			//console.log( JSON.stringify((data)));
+	   			//var users = JSON.parse(data);
+	   			if("505"==re.status){
+	   				return callback(1,re.message);
+	   			}
+	   			return callback(0,re.data);
+	   		},
+	   		error:function(xhr,type,errorThrown){
+	   			//异常处理；
+	   			//console.log(type); 
+	   			return callback(1,"连接服务器失败！");
+	   		}
+		}) 
+	}
+ }(mui, window.app = {}));

@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css" />
+	</head>
+	<style>
+		.mui-input-row label {
+			width: 24%;
+			padding : 11px 0px 11px 4px;
+		}
+		.mui-input-row label~input, .mui-input-row label~textarea {
+			width: 76%;
+			padding : 11px 0px 11px 0px;
+			font-size: 16px;
+		}
+		.mui-input-row {
+			margin-top: 10px;
+			
+		}
+		.mui-content-padded {
+			margin-top: 25px;
+		}
+		.mui-btn{
+			margin: 10px 10px 10px 25px;
+			width: 25%;
+			font-size: 16px;
+		}
+		 .mui-input-row label~select{
+			width:75% ;
+			padding: 0px 0px;
+		}
+		.mui-content-padded span{
+			color:red;
+		}
+		
+		.time button {
+			float: left;
+			margin: 3px 0px 0px 0px;
+			width: 75%;
+			text-align: left;
+			font-size: 17px;
+			padding: 5px;
+			border: 0px;
+			vertical-align: middle;
+		}
+	</style>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">采集数据</h1>
+		</header>
+		<div class="mui-content"> 
+			<div class="mui-input-group">
+				<div class="time mui-input-row ">
+					<label class='mui-label'>灭菌日期</label>
+					<input name="mjdate" type="hidden" id="mjdate" value="">
+					<button id='mjbtn' class="btn  mui-btn-block">请选择灭菌日期</button>
+				</div>
+				
+				<div class="mui-input-row">
+					<label>操作人</label>
+					<select class="mui-select " name="operator" id="operator">
+						<option value="0">请选择操作人</option>	
+						<option value="崔健">崔健</option>	
+						<option value="李刚">李刚</option>
+						<option value="魏国">魏国</option>
+					</select>
+					<!-- <input id='operator' type="" class="mui-input-clear mui-input" placeholder="请输入密码"> -->
+				</div>
+				<div class="mui-input-row">
+					<label>班别</label>
+					<select class="mui-select " name="banbie" id="banbie">
+						<option value="0">请选择班别</option>
+						<option value="E">E</option>
+						<option value="Y">Y</option>
+					</select>
+				</div>
+				<div class="mui-input-row">
+					<label>灭菌柜号</label>
+					<select class="mui-select " name="guihao" id="guihao">
+						<option value="0">请选择灭菌柜号</option>
+						<option value="1">1</option>	
+						<option value="2">2</option>
+						<option value="3">3</option>	
+						<option value="4">4</option>
+						<option value="5">5</option>	
+						<option value="6">6</option>
+						<option value="7">7</option>	
+						<option value="8">8</option>
+						<option value="9">9</option>	
+						<option value="10">10</option>
+					</select>
+				</div>
+				<div class="mui-input-row barcodediv">
+					<label>条码号</label>
+					<input id='barcode' type="text" class="mui-input-clear mui-input" placeholder="请输入条码">
+				</div>
+			</div>
+		</div>
+		<div class="mui-content-padded">
+			<label>当前托盘数:</label><span id='tp'>0</span><br/>
+		</div>
+		<div class="mui-content-padded">
+			<label>当前灭菌批箱数 :</label> <span id='mjp'>0</span>
+		</div>
+		<div class="mui-button-row">
+			<button id='clearbtn' type="button" class="mui-btn mui-btn-danger" >清除</button>
+			<button id='clearallbtn' type="button" class="mui-btn mui-btn-primary " >结束扫描</button>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.enterfocus.js"></script>
+		<script src="js/app.js"></script>
+		<script src="js/mui.picker.min.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function () {
+				document.getElementById('mjbtn').addEventListener("tap",function(){
+					var dtpicker = new mui.DtPicker({
+						type: "date",//设置日历初始视图模式 
+						beginDate: new Date(2019, 01, 01),//设置开始日期 
+						endDate: new Date(2030,01,01),//设置结束日期 
+						labels: ['年', '月', '日'],//设置默认标签区域提示语 
+						language:'zh-CN',
+						customData: { 
+							
+						}//时间/日期别名 
+					})
+					dtpicker.show(function(e) { 
+						document.getElementById("mjbtn").innerHTML = e.y.text + "-" + e.m.text + "-" + e.d.text ;
+						document.getElementById("mjdate").value = e.y.text + "-" + e.m.text + "-" + e.d.text;
+					})
+				});
+				
+				
+				var barcodeBox = document.getElementById("barcode");
+				var guihaoBox = document.getElementById('guihao');
+				var banbieBox = document.getElementById('banbie');
+				var operatorBox = document.getElementById('operator');
+				var mjdateBox = document.getElementById('mjdate');
+				var tpspan = document.getElementById("tp");
+				var mjpspan = document.getElementById("mjp");
+				
+				mui.enterfocus('#barcode', function() {
+					var sterilize = {
+						barcode: barcodeBox.value,
+						mjdate: mjdateBox.value,
+						banbie: banbieBox.value,
+						guihao: guihaoBox.value,
+						coperator: operatorBox.value
+					};
+					
+					//保存灭菌记录
+					app.saveSterilize(sterilize, function(res,data) {
+						//保存失败
+						if (res==1) {
+							//提示错误信息
+							mui.alert(data, '错误', function() {
+								barcodeBox.focus();
+							});
+							return ;
+						}else if(res==0){//成功
+							//设置托盘数+1
+							tpspan.innerHTML = parseInt(tpspan.innerHTML)+1;
+							//设置灭菌批数+1
+							mjpspan.innerHTML = parseInt(data.mjbtimes);
+						}
+					}); 
+					
+				});
+				
+				document.getElementById('clearbtn').addEventListener("tap",function(){
+					barcodeBox.value = "";
+					guihaoBox.value = 0;
+					banbieBox.value = 0;
+					mjdateBox.value = '';
+					document.getElementById('mjbtn').innerHTML = '请选择灭菌日期';
+					operatorBox.value = 0;
+					tpspan.innerHTML = 0;
+					mjpspan.innerHTML = 0;
+				})
+			})
+		</script>
+	</body>
+
+</html>

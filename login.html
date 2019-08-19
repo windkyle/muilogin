@@ -97,7 +97,7 @@
 
 	<body>
 		<header class="mui-bar mui-bar-nav">
-			<h1 class="mui-title">灭绝追溯系统</h1>
+			<h1 class="mui-title">灭菌追溯系统</h1>
 		</header>
 		<div class="mui-content" style="margin-top: 75px;padding-top: 0px;text-align: center;">
 			<img src="images/logo.png" >
@@ -259,14 +259,14 @@
 					}, 600);
 					//检查 "登录状态/锁屏状态" 结束
 					var loginButton = doc.getElementById('login');
-					var accountBox = doc.getElementById('account');
+					var usernameBox = doc.getElementById('username');
 					var passwordBox = doc.getElementById('password');
 					var autoLoginButton = doc.getElementById("autoLogin");
 					var regButton = doc.getElementById('reg');
 					var forgetButton = doc.getElementById('forgetPassword');
 					loginButton.addEventListener('tap', function(event) {
 						var loginInfo = {
-							account: accountBox.value,
+							username: usernameBox.value,
 							password: passwordBox.value
 						};
 						app.login(loginInfo, function(err) {
@@ -321,9 +321,9 @@
 						});
 					}, false); */
 					//
-					window.addEventListener('resize', function() {
+					/* window.addEventListener('resize', function() {
 						oauthArea.style.display = document.body.clientHeight > 400 ? 'block' : 'none';
-					}, false);
+					}, false); */
 					//
 					var backButtonPress = 0;
 					$.back = function(event) {

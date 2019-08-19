@@ -3,7 +3,9 @@
 		var boxArray = [].slice.call(document.querySelectorAll(selector));
 		for (var index in boxArray) {
 			var box = boxArray[index];
+			console.log(box.id);
 			box.addEventListener('keyup', function(event) {
+				console.log(box.id); 
 				if (event.keyCode == 13) {
 					var boxIndex = boxArray.indexOf(this);
 					if (boxIndex == boxArray.length - 1) {
